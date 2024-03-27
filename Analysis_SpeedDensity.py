@@ -1,6 +1,5 @@
 import numpy as np
-
-from Calibration import *
+from helper import *
 from scipy import stats
 
 
@@ -15,16 +14,23 @@ def check_halfwidth(speed):
 
 if __name__ == '__main__':
     walking_behavior_param = {'CW1': (0.118, 1.052, 0.103, 0.3, 6.377), 'DEFAULT': (0.400, 2.720, 0.200, 0.400, 3.00)}
+
     Vissim = set_vissim(10, 42, 'Intersection - uninterrupted.inpx')
-    set_parameters(Vissim, walking_behavior_param['DEFAULT'])  # CHANGE
+
+    # Uncomment when we want to analyze calibrated parameters
+    set_parameters(Vissim, walking_behavior_param["CW1"])
+
+    # Uncomment when we want to analyze the default parameters
+    # set_parameters(Vissim, walking_behavior_param['DEFAULT'])
+
     Sim_break_at = 3599
     Vissim.Simulation.SetAttValue('SimBreakAt', Sim_break_at)
+    
     link_1 = 1
     link_2 = 2
     sm_aura_id = 1
     market_market_id = 2
     street_id = 3
-
     alpha = 0.05
     margin_of_error = 0.05
     speed_den_relation_bi = []
@@ -38,9 +44,13 @@ if __name__ == '__main__':
         Vissim.Net.PedestrianInputs.ItemByKey(market_market_id).SetAttValue('Volume(1)', volume)
         Vissim.Net.PedestrianInputs.ItemByKey(street_id).SetAttValue('Volume(1)', volume)
         counter = 0
+
+        # Bidirectional Flow
         speed_list_1 = []
         density_list_1 = []
         number_list_1 = []
+
+        # Unidirectional Flow
         speed_list_2 = []
         density_list_2 = []
         number_list_2 = []
@@ -74,14 +84,13 @@ if __name__ == '__main__':
                 mean_1, h_1 = check_halfwidth(speed_list_1)
                 mean_2, h_2 = check_halfwidth(speed_list_2)
                 if h_1 <= margin_of_error and h_2 <= margin_of_error:
-                    # print(f'\nSummary')
+
                     mean_density_1 = np.mean(density_list_1)
                     mean_number_1 = np.mean(number_list_1)
                     mean_density_2 = np.mean(density_list_2)
                     mean_number_2 = np.mean(number_list_2)
-                    # print(f'Density: {mean_density} ped/square meter')
-                    # print(f'Speed: {mean} +- {h} m/s')
                     break
+
             counter += 1
 
         speed_den_relation_bi.append([mean_density_1, mean_1, h_1, mean_number_1])
