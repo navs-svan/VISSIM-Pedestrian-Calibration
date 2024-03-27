@@ -2,6 +2,9 @@ from helper import *
 import pygad
 
 def fitness_func(ga_instance, solution, solution_idx):
+    """The fitness function as defined in the Pygad Documentation. Because of 
+    its strict arguments, manual editing of code is needed to perform different 
+    calibrations"""
     time = 540 # time in seconds
     set_parameters(Vissim, solution)
     local_ped_list_one, local_ped_list_two = get_data(Vissim, time)
@@ -24,7 +27,8 @@ def fitness_func(ga_instance, solution, solution_idx):
     return fitness
 
 
-def genetic_algorithm():
+def genetic_algorithm() -> None:
+    """Performs genetic algorithm to calibrate the walking behavior parameters"""
     # Define GA Parameters
     fitness_function = fitness_func
     num_generations = 50
